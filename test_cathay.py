@@ -1,4 +1,5 @@
 import logging
+import os
 
 import pytest
 from appium import webdriver
@@ -55,11 +56,18 @@ class TestCathay:
         stop_card_block_elem = self.driver.find_element(By.XPATH,
                                                         "/html/body/div[1]/main/article/section[6]/div")
         self.driver.scroll(card_title_elem, stop_card_block_elem)
-        self.driver.get_screenshot_as_file("stop_card/stop_card_01.png")
+        # Create folder to save stop card screenshot.
+        stop_card_folder = "stop_card"
+        if not os.path.exists(stop_card_folder):
+            os.makedirs(stop_card_folder)
         all_stop_card_elems = self.driver.find_elements(By.XPATH,
                                                         "/html/body/div[1]/main/article/section[6]/div/div[2]/div/div[1]/div")
         logging.info(f"There are {len(all_stop_card_elems)} stop cards.")
-        for i in range(len(all_stop_card_elems) - 1):
-            self.driver.scroll(all_stop_card_elems[i], all_stop_card_elems[i + 1])
-            WebDriverWait(all_stop_card_elems[i + 1], 10).until(EC.visibility_of_element_located((By.TAG_NAME, 'img')))
-            self.driver.get_screenshot_as_file(f"stop_card/stop_card_{str(i + 2).zfill(2)}.png")
+        for i in range(len(all_stop_card_elems)):
+            WebDriverWait(all_stop_card_elems[i], 10).until(EC.visibility_of_element_located((By.TAG_NAME, 'img')))
+            self.driver.get_screenshot_as_file(f"{stop_card_folder}/stop_card_{str(i + 1).zfill(2)}.png")
+            if i + 1 < len(all_stop_card_elems):
+                self.driver.scroll(all_stop_card_elems[i], all_stop_card_elems[i + 1])
+        screenshot_files = os.listdir(stop_card_folder)
+        assert len(screenshot_files) == len(all_stop_card_elems), \
+            f"There should be {len(all_stop_card_elems)} screenshot files in folder({stop_card_folder})."
