@@ -8,9 +8,9 @@ python logic_03.py
 ```
 
 ## 自動化測試
-採用pytest框架撰寫。
+採用pytest框架撰寫，測試程式碼在test_cathay.py。
 
-appinum環境設置可參考以下兩篇文章。
+appium環境設置可參考以下兩篇文章。
 * https://coolpaidasin.gitbooks.io/mobile_automation/content/ru-he-you-python-script-qidong-android-mo-ni-qi.html
 * https://appium.io/docs/en/latest/quickstart/install/  
 
