@@ -1,9 +1,15 @@
+import logging
+
 import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+
+logging.basicConfig(level=logging.INFO)
+chrome_driver_path = "C:\\Users\\YIHSUAN\\Downloads\\chromedriver_win_84\\chromedriver.exe"
+avd_uid = "emulator-5554"
 
 
 class TestCathay:
@@ -13,12 +19,9 @@ class TestCathay:
             platformName='Android',
             automationName='uiautomator2',
             deviceName='Android',
-            appActivity='.Settings',
-            language='en',
-            locale='US',
-            chromedriverExecutable="C:\\Users\\YIHSUAN\\Downloads\\chromedriver_win_84\\chromedriver.exe",
+            chromedriverExecutable=chrome_driver_path,
             browserName="Chrome",
-            udid="emulator-5554",
+            udid=avd_uid,
             showChromedriverLog=True,
             chromeOptions={'w3c': False}
         )
@@ -29,5 +32,34 @@ class TestCathay:
         self.driver.get("https://www.cathaybk.com.tw/cathaybk/")
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "searchBox")))
         self.driver.get_screenshot_as_file("index_page.png")
+        # Go to credit card menu.
         menu_elem = self.driver.find_element(By.XPATH, "//header/div/div[1]")
         menu_elem.click()
+        product_intro_elem = self.driver.find_element(By.XPATH,
+                                                      "/html/body/div[1]/header/div/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div")
+        product_intro_elem.click()
+        credit_card_elem = self.driver.find_element(By.XPATH,
+                                                    "/html/body/div[1]/header/div/div[3]/div/div[2]/div[1]/div/div[1]/div[2]/div/div[1]/div[1]/div")
+        credit_card_elem.click()
+        credit_card_sub_elems = self.driver.find_elements(By.XPATH,
+                                                          "/html/body/div[1]/header/div/div[3]/div/div[2]/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/a")
+        logging.info(f"There are {len(credit_card_sub_elems)} items under credit card menu.")
+        self.driver.get_screenshot_as_file("credit_card_sub_item_01.png")
+        self.driver.scroll(credit_card_sub_elems[0], credit_card_sub_elems[-1])
+        self.driver.get_screenshot_as_file("credit_card_sub_item_02.png")
+        self.driver.scroll(credit_card_sub_elems[-1], credit_card_sub_elems[0])
+        credit_card_sub_elems[0].click()
+        # Go to stop card section.
+        card_title_elem = WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "/html/body/div[1]/main/div/div[2]/div[1]/p")))
+        stop_card_block_elem = self.driver.find_element(By.XPATH,
+                                                        "/html/body/div[1]/main/article/section[6]/div")
+        self.driver.scroll(card_title_elem, stop_card_block_elem)
+        self.driver.get_screenshot_as_file("stop_card/stop_card_01.png")
+        all_stop_card_elems = self.driver.find_elements(By.XPATH,
+                                                        "/html/body/div[1]/main/article/section[6]/div/div[2]/div/div[1]/div")
+        logging.info(f"There are {len(all_stop_card_elems)} stop cards.")
+        for i in range(len(all_stop_card_elems) - 1):
+            self.driver.scroll(all_stop_card_elems[i], all_stop_card_elems[i + 1])
+            WebDriverWait(all_stop_card_elems[i + 1], 10).until(EC.visibility_of_element_located((By.TAG_NAME, 'img')))
+            self.driver.get_screenshot_as_file(f"stop_card/stop_card_{str(i + 2).zfill(2)}.png")
