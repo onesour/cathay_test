@@ -18,6 +18,12 @@ appium環境設置可參考以下兩篇文章。
 ```shell
 pip install -r requirements.txt
 ```
+在test_cathay.py中請將以下參數改為自己環境的配置。  
+chrome driver請下載符合android手機chrome app的版本。
+```python
+chrome_driver_path = [chrome_driver_path]
+avd_uid = [android_virtual_device_udid]
+```
 測試程式請直接在專案底下運行pytest，pytest相依的opts已寫在pytest.ini中。
 ```shell
 pytest
